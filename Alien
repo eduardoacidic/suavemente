@@ -1,0 +1,91 @@
+var time = 0;
+var score = 0;
+var hit = "false";
+var finish = "false";
+var bg = createSprite(200, 200);
+bg.setAnimation("bg");
+var bullet = createSprite(200, 80);
+bullet.scale = 0.15;
+bullet.visible = 0;
+bullet.setAnimation("fire");
+var alien = createSprite(350, 368);
+alien.visible = 0;
+alien.setAnimation("Alien");
+alien.scale = 0.1;
+var astronaut = createSprite(50, 368);
+astronaut.setAnimation("astronautrunning");
+astronaut.scale = 0.2;
+var ufo = createSprite(350, 50);
+ufo.setAnimation("ufo");
+ufo.scale = 0.2;
+function draw() {
+  ufo.velocityY = 40;
+  bg.nextFrame();
+  astronaut.nextFrame();
+  ufo.nextFrame();
+  World.frameRate = 6;
+  drawSprites();
+  if (ufo.y > 270) {
+    time = World.seconds;
+    ufo.velocityY = 0;
+    ufo.setAnimation("ufowithlight");
+  }
+  if (time > 1 && (finish == "false" && hit == "false")) {
+    score = World.seconds - 2;
+    ufo.velocityY = -30;
+    ufo.setAnimation("ufo");
+    alien.visible = 1;
+    alien.velocityX = -20;
+  }
+  if (ufo.y < 50) {
+    ufo.velocityY = 0;
+    ufo.velocityX = -10;
+  }
+  if (ufo.x < 200) {
+    bullet.visible = 1;
+    bullet.setSpeedAndDirection(15, 120);
+    bullet.rotation = 120;
+    ufo.velocityX = 0;
+    ufo.x = 200;
+  }
+  if (keyWentDown("right")) {
+    astronaut.x = astronaut.x + 50;
+  }
+  if (keyWentDown("left")) {
+    astronaut.x = astronaut.x + -50;
+  }
+  if (keyWentDown("up")) {
+    astronaut.velocityY = -20;
+    astronaut.setAnimation("astronautjumping");
+  }
+  if (astronaut.y < 230) {
+    astronaut.velocityY = 20;
+  }
+  if (astronaut.y > 368) {
+    astronaut.velocityY = 0;
+    astronaut.setAnimation("astronautrunning");
+    astronaut.y = 368;
+  }
+  if (alien.x < -50) {
+    alien.x = 800;
+  }
+  if (bullet.y > 400) {
+    bullet.x = 200;
+    bullet.y = 80;
+  }
+  if (astronaut.isTouching(alien) || astronaut.isTouching(bullet)) {
+    hit = "true";
+    astronaut.destroy();
+    bullet.destroy();
+    ufo.destroy();
+    alien.destroy();
+    score = score;
+  }
+  fill("yellow");
+  textSize(30);
+  text(score, 10, 30);
+  if (hit=="true") {
+    textSize(50);
+    text("Game over", 100, 150);
+  }
+}
